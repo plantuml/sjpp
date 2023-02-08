@@ -35,7 +35,7 @@ jobs:
     - name: Test
       run: gradle test --no-daemon -i
 
-    - run: ls -lrt
+    - run: ls -lR
 
     - uses: actions/upload-artifact@v3
       with:
