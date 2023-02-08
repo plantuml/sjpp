@@ -4,11 +4,8 @@
 package sjpp;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+	public static void main(String[] args) {
+		System.out.println("Hello Simple Java PreProcessor");
+	}
 }
