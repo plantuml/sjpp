@@ -34,8 +34,10 @@ jobs:
 
     - name: Test
       run: gradle test --no-daemon -i
+	  
+    - run: ls -lrt
 
     - uses: actions/upload-artifact@v3
       with:
         name: my-artifact
-        path: sjpp/builds/libs	  
+        path: sjpp/builds/libs
