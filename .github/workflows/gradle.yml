@@ -28,7 +28,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-		
+
     - name: Compile
       run: gradle -q compileJava --no-daemon
 
