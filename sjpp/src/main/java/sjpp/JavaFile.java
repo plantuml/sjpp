@@ -31,11 +31,17 @@ public class JavaFile {
 			switch (dir) {
 			case IMPORT:
 				break;
-			case REMOVE_FOLDER:
-				context.removePackage(this.packageName);
+			case REMOVE_CURRENT_FOLDER:
+				if (context.doesApplyOn(s))
+					context.removeCurrentFolder(this.packageName);
+				break;
+			case REMOVE_FOLDER_AND_SUBFOLDERS:
+				if (context.doesApplyOn(s))
+					context.removeFolderAndSubfolders(this.packageName);
 				break;
 			case REMOVE_FILE:
-				context.removeFile(this);
+				if (context.doesApplyOn(s))
+					context.removeFile(this);
 				break;
 			}
 		}
@@ -51,13 +57,16 @@ public class JavaFile {
 		return path.toString();
 	}
 
-	public boolean belongsToPackage(String p) {
-		return packageName.startsWith(p);
-	}
-
+//	public boolean belongsToPackage(String p) {
+//		return getPackageName().startsWith(p);
+//	}
+//
 	public void process() {
 
-		Mode mode = Mode.NORMAL;
+		if (context.getMode() == ContextMode.REGULAR)
+			removeFirstHeader();
+
+		ProcessMode mode = ProcessMode.NORMAL;
 
 		for (ListIterator<String> it = lines.listIterator(); it.hasNext();) {
 			final String line = it.next();
@@ -66,25 +75,52 @@ public class JavaFile {
 				final int x = line.indexOf(';');
 				final String importName = line.substring("import ".length(), x).trim();
 				final boolean removeImportLine = context.removeImportLine(importName);
-				if (removeImportLine) {
-					// System.err.println(line);
-					it.set("// " + line);
-				}
-			} else if (dir == Directive.UNCOMMENT) {
-				mode = Mode.UNCOMMENT;
-			} else if (dir == Directive.COMMENT) {
-				mode = Mode.COMMENT;
+				if (removeImportLine)
+					shadowThisLine(it, line);
+
+			} else if (dir == Directive.UNCOMMENT && context.doesApplyOn(line)) {
+				mode = ProcessMode.UNCOMMENT;
+				removeLineIfRegularMode(it);
+			} else if (dir == Directive.COMMENT && context.doesApplyOn(line)) {
+				mode = ProcessMode.COMMENT;
+				removeLineIfRegularMode(it);
 			} else if (dir == Directive.DONE) {
-				mode = Mode.NORMAL;
+				mode = ProcessMode.NORMAL;
+				removeLineIfRegularMode(it);
 			} else {
-				if (mode == Mode.COMMENT)
-					it.set("// " + line);
-				else if (mode == Mode.UNCOMMENT)
+				if (mode == ProcessMode.COMMENT)
+					shadowThisLine(it, line);
+				else if (mode == ProcessMode.UNCOMMENT)
 					it.set(line.replaceFirst("//", ""));
 
 			}
 		}
 
+	}
+
+	private void removeFirstHeader() {
+		if (lines.get(0).startsWith("/*") == false)
+			return;
+		final ListIterator<String> it = lines.listIterator();
+		while (it.hasNext()) {
+			final String line = it.next();
+			it.remove();
+			if (line.endsWith("*/"))
+				return;
+		}
+
+	}
+
+	protected void removeLineIfRegularMode(ListIterator<String> it) {
+		if (context.getMode() == ContextMode.REGULAR)
+			it.remove();
+	}
+
+	protected void shadowThisLine(ListIterator<String> it, String line) {
+		if (context.getMode() == ContextMode.DEBUG)
+			it.set("// " + line);
+		else
+			it.remove();
 	}
 
 	public boolean isItMe(String name) {
@@ -105,11 +141,16 @@ public class JavaFile {
 	}
 
 	public void save(Path newPath) throws IOException {
+		lines.add(0, Context.GENERATED);
 		Files.createDirectories(newPath.getParent());
 		Files.write(newPath, lines);
 	}
 
-	static enum Mode {
+	static enum ProcessMode {
 		NORMAL, COMMENT, UNCOMMENT
+	}
+
+	public final String getPackageName() {
+		return packageName;
 	}
 }

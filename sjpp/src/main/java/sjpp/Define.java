@@ -9,6 +9,6 @@ public class Define {
 	}
 
 	public boolean doesApplyOn(String s) {
-		return s.endsWith("when " + id);
+		return s.matches(".*when.*" + id + ".*");
 	}
 }
