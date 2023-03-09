@@ -17,19 +17,15 @@ public class Context {
 	private Define define;
 	private final ContextMode mode;
 	private final List<JavaFile> files = new ArrayList<JavaFile>();
-	// private final Deque<JavaFile> files2 = new ArrayDeque<JavaFile>();
-
-//	private final Collection<String> removedPackage = new CopyOnWriteArrayList<String>();
-//	private final Collection<JavaFile> removedFiles = new CopyOnWriteArrayList<JavaFile>();
 
 	private final Collection<String> removedCurrentFolder = new HashSet<String>();
 	private final Collection<String> removedfolderAndSubfolders = new HashSet<String>();
 	private final Collection<JavaFile> removedFiles = new HashSet<JavaFile>();
 
-	private final Path root;
+	private final Path source;
 
-	public Context(ContextMode mode, Path root) {
-		this.root = root;
+	public Context(ContextMode mode, Path source) {
+		this.source = source;
 		this.mode = mode;
 	}
 
@@ -49,12 +45,12 @@ public class Context {
 		}
 	}
 
-	public void process(boolean deleteFiles, Path out) throws IOException, InterruptedException {
+	public void process(Path destination) throws IOException, InterruptedException {
 
 		final long start = System.currentTimeMillis();
 		System.err.println("Starting...");
 
-		Files.walk(root).filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".java"))
+		Files.walk(source).filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".java"))
 				.forEach(this::addPath);
 
 		System.err.println("(" + (System.currentTimeMillis() - start) + " ms) load start");
@@ -63,7 +59,9 @@ public class Context {
 			if (isRemoved(file) && removedFiles.contains(file) == false)
 				removedFiles.add(file);
 
-		final ExecutorService executorService = Executors.newFixedThreadPool(8);
+		final int availableProcessors = Runtime.getRuntime().availableProcessors();
+		System.err.println("(Using " + availableProcessors + " runners)");
+		final ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
 		for (JavaFile file : files) {
 			if (removedFiles.contains(file))
 				continue;
@@ -78,15 +76,12 @@ public class Context {
 		executorService.awaitTermination(1, TimeUnit.HOURS);
 
 		System.err.println("(" + (System.currentTimeMillis() - start) + " ms) process done");
-		if (deleteFiles)
-			deleteJavaFiles(out);
-		else
-			deleteJavaFilesSafe(out);
+		deleteJavaFilesSafe(destination);
 
 		for (JavaFile file : files) {
 			if (removedFiles.contains(file))
 				continue;
-			final Path newPath = file.getNewPath(out);
+			final Path newPath = file.getNewPath(destination);
 			file.save(newPath);
 
 		}
@@ -101,17 +96,6 @@ public class Context {
 				final String first = Files.readAllLines(path).get(0);
 				if (first.startsWith(GENERATED))
 					Files.delete(path);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-
-	}
-
-	private void deleteJavaFiles(Path out) throws IOException {
-		Files.walk(out).filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".java")).forEach(path -> {
-			try {
-				Files.delete(path);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -162,7 +146,7 @@ public class Context {
 //	}
 
 	public final Path getRoot() {
-		return root;
+		return source;
 	}
 
 	public ContextMode getMode() {

@@ -49,7 +49,6 @@ public class JavaFile {
 		if (packageName == null)
 			throw new IllegalArgumentException(path.toString());
 
-		// System.err.println(lines.size());
 	}
 
 	@Override
@@ -57,10 +56,6 @@ public class JavaFile {
 		return path.toString();
 	}
 
-//	public boolean belongsToPackage(String p) {
-//		return getPackageName().startsWith(p);
-//	}
-//
 	public void process() {
 
 		if (context.getMode() == ContextMode.REGULAR)
@@ -76,7 +71,7 @@ public class JavaFile {
 				final String importName = line.substring("import ".length(), x).trim();
 				final boolean removeImportLine = context.removeImportLine(importName);
 				if (removeImportLine)
-					shadowThisLine(it, line);
+					commentThisLine(it, line);
 
 			} else if (dir == Directive.UNCOMMENT && context.doesApplyOn(line)) {
 				mode = ProcessMode.UNCOMMENT;
@@ -84,18 +79,45 @@ public class JavaFile {
 			} else if (dir == Directive.COMMENT && context.doesApplyOn(line)) {
 				mode = ProcessMode.COMMENT;
 				removeLineIfRegularMode(it);
+			} else if (dir == Directive.REVERT && context.doesApplyOn(line)) {
+				mode = ProcessMode.REVERT;
+				removeLineIfRegularMode(it);
 			} else if (dir == Directive.DONE) {
 				mode = ProcessMode.NORMAL;
 				removeLineIfRegularMode(it);
 			} else {
 				if (mode == ProcessMode.COMMENT)
-					shadowThisLine(it, line);
+					commentThisLine(it, line);
 				else if (mode == ProcessMode.UNCOMMENT)
-					it.set(line.replaceFirst("//", ""));
-
+					uncommentThisLine(it, line);
+				else if (mode == ProcessMode.REVERT)
+					revertThisLine(it, line);
 			}
 		}
 
+	}
+
+	private void revertThisLine(ListIterator<String> it, String line) {
+		if (isCommented(line))
+			uncommentThisLine(it, line);
+		else
+			commentThisLine(it, line);
+	}
+
+	private boolean isCommented(String line) {
+		return line.replaceAll("\\s+", "").startsWith("//");
+	}
+
+	private void uncommentThisLine(ListIterator<String> it, String line) {
+		if (isCommented(line))
+			it.set(line.replaceFirst("//", ""));
+	}
+
+	protected void commentThisLine(ListIterator<String> it, String line) {
+		if (context.getMode() == ContextMode.DEBUG)
+			it.set("// " + line);
+		else
+			it.remove();
 	}
 
 	private void removeFirstHeader() {
@@ -113,13 +135,6 @@ public class JavaFile {
 
 	protected void removeLineIfRegularMode(ListIterator<String> it) {
 		if (context.getMode() == ContextMode.REGULAR)
-			it.remove();
-	}
-
-	protected void shadowThisLine(ListIterator<String> it, String line) {
-		if (context.getMode() == ContextMode.DEBUG)
-			it.set("// " + line);
-		else
 			it.remove();
 	}
 
@@ -147,7 +162,7 @@ public class JavaFile {
 	}
 
 	static enum ProcessMode {
-		NORMAL, COMMENT, UNCOMMENT
+		NORMAL, COMMENT, UNCOMMENT, REVERT
 	}
 
 	public final String getPackageName() {

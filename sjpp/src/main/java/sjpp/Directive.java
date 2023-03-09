@@ -6,6 +6,7 @@ public enum Directive {
 	REMOVE_FOLDER_AND_SUBFOLDERS, //
 	COMMENT, //
 	UNCOMMENT, //
+	REVERT, //
 	DONE, //
 	IMPORT, //
 	NONE;
@@ -29,6 +30,9 @@ public enum Directive {
 		
 		if (line.startsWith("//::commentwhen"))
 			return Directive.COMMENT;
+		
+		if (line.startsWith("//::revertwhen"))
+			return Directive.REVERT;
 		
 		if (line.startsWith("//::uncommentwhen"))
 			return Directive.UNCOMMENT;
