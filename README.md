@@ -3,7 +3,7 @@ This Simple Java PreProcessor provides some basic directives used to generate a 
 
 All directives are embedded in Java comments which means that the original unprocessed sources can be compiled by any regular Java compiler.
 
-When running the precessor, some flags may be define. Directives check wether a flag is defined or not. If the flag expected by directive is define, the directive is executed. Otherwise, the directive is simply ignored.
+When running the precessor, some flags may be define. Directives check wether a flag is defined or not. If the flag expected by the directive is define, the directive is executed. Otherwise, the directive is simply ignored.
 
 ## Running the preprocessor
 
