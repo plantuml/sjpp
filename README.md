@@ -1,23 +1,39 @@
-# sjpp
+# Simple Java PreProcessor
 This Simple Java PreProcessor provides some basic directives used to generate a new tree structure of Java sources from some existing Java sources.
 
 All directives are embedded in Java comments which means that the original unprocessed sources can be compiled by any regular Java compiler.
 
 When running the precessor, some flags may be define. Directives check wether a flag is defined or not. If the flag expected by directive is define, the directive is executed. Otherwise, the directive is simply ignored.
 
-## List of directives:
+## Running the preprocessor
+
+If you launch the preprocessor without any arguments, you'll get some help:
+
+```
+Usage: java -jar sjpp.jar <source_tree> <destination_tree> <flag define>
+
+Example:
+Usage: java -jar sjpp.jar src src-core __CORE__
+In this example, the flag __CORE__ is defined.
+Then all Java files in 'src' folder (and subfolders) will be pre-processed and the result is saved in 'src-core' folder.
+
+More info at https://github.com/plantuml/sjpp
+```
 
 
-### Remove a file
-  
+
+## List of directives
+
+### Remove a file
+
 This directive could be put anywhere in any `.java` file. The syntax is `//::remove file when ` followed by the condition (that is, the flag name)
 
 If the corresponding flag has been defined, the file containing this line will be deleted from the target tree structure.
 
 In addition, every `import` of this file will also be removed from any file of the target tree structure.
   
-  
-### Remove a single folder
+
+### Remove a single folder
 
 This directive could be put anywhere in any `.java` file. The syntax is `//::remove current folder when ` followed by the condition (that is, the flag name)
 
@@ -25,8 +41,7 @@ If the corresponding flag has been defined, all files from the folder containing
 
 In addition, every `import` of any removed file will also be removed from any file of the target tree structure.
 
-
-### Remove a folder and its subfolders
+### Remove a folder and its subfolders
 
 This directive could be put anywhere in any `.java` file. The syntax is `//::remove folder when ` followed by the condition (that is, the flag name)
 
@@ -35,7 +50,7 @@ If the corresponding flag has been defined, all files from the folder (or its su
 In addition, every `import` of any removed file will also be removed from any file of the target tree structure.
 
 
-### Comment some code
+### Comment some code
 
 This directive is used to remove a part of a `.java` file.
 
@@ -45,7 +60,7 @@ This directive is used to remove a part of a `.java` file.
 All lines between those two lines will simply be removed in the result file.
 
 
-### Uncomment some code
+### Uncomment some code
 
 This directive is used to uncomment a part of a `.java` file.
 
@@ -55,7 +70,7 @@ This directive is used to uncomment a part of a `.java` file.
 All lines between those two lines will be uncommented in the result file.
 
 
-### Switch some code
+### Switch some code
 
 This directive is used to both comment or uncomment a part of a `.java` file.
 
