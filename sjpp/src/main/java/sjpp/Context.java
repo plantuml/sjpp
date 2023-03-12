@@ -91,6 +91,7 @@ public class Context {
 	}
 
 	private void deleteJavaFilesSafe(Path out) throws IOException {
+		Files.createDirectories(out);
 		Files.walk(out).filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".java")).forEach(path -> {
 			try {
 				final String first = Files.readAllLines(path).get(0);

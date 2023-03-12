@@ -11,8 +11,8 @@ public class App {
 			System.err.println("Usage: java -jar sjpp.jar <source_tree> <destination_tree> <flag define>");
 			System.err.println();
 			System.err.println("Example:");
-			System.err.println("Usage: java -jar sjpp.jar src src-core __CORE__");
-			System.err.println("In this example, the flag __CORE__ is defined.");
+			System.err.println("Usage: java -jar sjpp.jar src src-core DEMO");
+			System.err.println("In this example, the flag DEMO is defined.");
 			System.err.println(
 					"Then all Java files in 'src' folder (and subfolders) will be pre-processed and the result is saved in 'src-core' folder.");
 			System.err.println();
