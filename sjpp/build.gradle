@@ -17,6 +17,9 @@ repositories {
 }
 
 dependencies {
+	// Ant
+	compileOnly 'org.apache.ant:ant:1.10.13'
+	
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 

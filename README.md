@@ -7,6 +7,24 @@ When running the precessor, some flags may be define. Directives check wether a 
 
 ## Running the preprocessor
 
+
+### With ANT
+
+You can create a task `sjpp`.
+You need to give the input tree structure (`src`) , the destination tree structure (`dest`) and the flag to be defined (`define`).
+
+Example:
+
+```
+	<taskdef name="sjpp" classname="sjpp.SjppAntTask" />
+	<target name="dist">
+		<sjpp src="src-folder" dest="src-generated" define="__MIT__" />
+	</target>
+
+```
+
+### On the command line
+
 If you launch the preprocessor without any arguments, you'll get some help:
 
 ```
