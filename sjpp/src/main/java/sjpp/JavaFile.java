@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -17,7 +18,12 @@ public class JavaFile {
 	public JavaFile(Context context, Path path) throws IOException {
 		this.path = path;
 		this.context = context;
-		this.lines = Files.readAllLines(path);
+
+		lines = new ArrayList<>();
+		if (context.getHeader() != null) {
+			lines.addAll(context.getHeader().getLines());
+		}
+		lines.addAll(Files.readAllLines(path));
 
 		for (String s : lines) {
 			if (s.startsWith("package ")) {
