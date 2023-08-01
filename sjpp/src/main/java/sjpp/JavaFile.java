@@ -18,12 +18,7 @@ public class JavaFile {
 	public JavaFile(Context context, Path path) throws IOException {
 		this.path = path;
 		this.context = context;
-
-		lines = new ArrayList<>();
-		if (context.getHeader() != null) {
-			lines.addAll(context.getHeader().getLines());
-		}
-		lines.addAll(Files.readAllLines(path));
+		this.lines = Files.readAllLines(path);
 
 		for (String s : lines) {
 			if (s.startsWith("package ")) {
@@ -66,6 +61,10 @@ public class JavaFile {
 
 		if (context.getMode() == ContextMode.REGULAR)
 			removeFirstHeader();
+
+		if (context.getHeader() != null) {
+			lines.addAll(0, context.getHeader().getLines());
+		}
 
 		ProcessMode mode = ProcessMode.NORMAL;
 
