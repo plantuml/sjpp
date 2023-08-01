@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -60,6 +61,10 @@ public class JavaFile {
 
 		if (context.getMode() == ContextMode.REGULAR)
 			removeFirstHeader();
+
+		if (context.getHeader() != null) {
+			lines.addAll(0, context.getHeader().getLines());
+		}
 
 		ProcessMode mode = ProcessMode.NORMAL;
 
