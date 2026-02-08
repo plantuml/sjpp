@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.nar
 *.ear
@@ -30,3 +31,5 @@ build
 
 # Ignore Idea IDE files
 .idea
+bin
+.classpath

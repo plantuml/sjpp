@@ -1,12 +1,12 @@
 package sjpp;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 
 public class SjppAntTask extends Task {
 
