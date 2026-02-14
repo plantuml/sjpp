@@ -8,15 +8,7 @@ public class App {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		if (args.length != 3) {
-			System.err.println("Usage: java -jar sjpp.jar <source_tree> <destination_tree> <flag define>");
-			System.err.println();
-			System.err.println("Example:");
-			System.err.println("Usage: java -jar sjpp.jar src src-core DEMO");
-			System.err.println("In this example, the flag DEMO is defined.");
-			System.err.println(
-					"Then all Java files in 'src' folder (and subfolders) will be pre-processed and the result is saved in 'src-core' folder.");
-			System.err.println();
-			System.err.println("More info at https://github.com/plantuml/sjpp");
+			printUsage();
 			return;
 		}
 		final String source = args[0];
@@ -30,6 +22,41 @@ public class App {
 		final Path out = Paths.get(destination);
 		context.process(out);
 
+	}
+
+	private static void printUsage() {
+		System.err.println("SJPP - Simple Java PreProcessor");
+		System.err.println("Version: " + CompilationInfo.COMMIT);
+		System.err.println();
+		System.err.println("DESCRIPTION:");
+		System.err.println("  Preprocesses Java source files using conditional compilation directives.");
+		System.err.println("  Reads from <source>, processes files based on <flag>, writes to <destination>.");
+		System.err.println();
+		System.err.println("USAGE:");
+		System.err.println("  java -jar sjpp.jar <source> <destination> <flag>");
+		System.err.println();
+		System.err.println("ARGUMENTS:");
+		System.err.println("  <source>       Input directory containing Java source files");
+		System.err.println("  <destination>  Output directory for processed files");
+		System.err.println("  <flag>         Preprocessing flag to define (e.g., __CORE__, __MIT__)");
+		System.err.println();
+		System.err.println("EXAMPLE:");
+		System.err.println("  java -jar sjpp.jar src src-core __CORE__");
+		System.err.println();
+		System.err.println("  This defines the flag __CORE__, then processes all Java files in 'src'");
+		System.err.println("  (recursively) and writes the result to 'src-core'.");
+		System.err.println();
+		System.err.println("DIRECTIVES (in source files):");
+		System.err.println("  // ::remove file when FLAG              Remove entire file");
+		System.err.println("  // ::remove current folder when FLAG    Remove all files in current folder");
+		System.err.println("  // ::remove folder when FLAG            Remove folder and subfolders");
+        System.err.println("  // ::comment when FLAG                  Comment out code block");
+        System.err.println("  // ::done");
+		System.err.println("  // ::uncomment when FLAG                Uncomment code block");
+        System.err.println("  // ::done");
+		System.err.println("  // ::revert when FLAG                   Toggle comment state of code block");
+        System.err.println("  // ::done");
+		System.err.println("More info: https://github.com/plantuml/sjpp");
 	}
 
 }
