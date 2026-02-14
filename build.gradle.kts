@@ -69,12 +69,14 @@ tasks.named("generateGitProperties") {
 }
 
 /**
- * Copy sources to build/ then replace $$git.commit.id$$ with the value from git.properties
+ * Copy sources to build/ then:
+ * - replace "$git.commit.id$" with the value from git.properties
+ * - replace "COMPILE_TIMESTAMP = 000" with the current epoch millis
  * (we don't touch src/main/java)
  */
 val filteredSrcDir = layout.buildDirectory.dir("generated/sources/git-filtered")
 
-val filterSourcesWithGitCommit by tasks.registering {
+val filterSourcesWithBuildInfo by tasks.registering {
     dependsOn("generateGitProperties")
     mustRunAfter("processResources")
 
@@ -88,7 +90,10 @@ val filterSourcesWithGitCommit by tasks.registering {
         val commitId = props.getProperty("git.commit.id")
             ?: error("git.commit.id not found in ${propsFile.absolutePath}")
 
-        // 2) Copy sources
+        // 2) Compute compile timestamp (epoch millis)
+        val compileTs = System.currentTimeMillis().toString()
+
+        // 3) Copy sources
         val outDir = filteredSrcDir.get().asFile
         outDir.deleteRecursively()
         project.copy {
@@ -96,21 +101,31 @@ val filterSourcesWithGitCommit by tasks.registering {
             into(outDir)
         }
 
-        // 3) Ant replace in the copy
+        // 4) Ant replace in the copy
         val targetFile = outDir.resolve("sjpp/CompilationInfo.java")
         if (!targetFile.exists()) {
             error("Target file not found: ${targetFile.absolutePath}")
         }
 
         ant.withGroovyBuilder {
+            // commit token replacement
             "replace"(
                 "file" to targetFile.absolutePath,
                 "token" to "\$git.commit.id\$",
                 "value" to commitId
             )
+
+            // timestamp replacement: keep Java compiling even without injection by replacing the whole assignment
+            // We match the exact placeholder form to avoid accidental replacements elsewhere.
+            "replace"(
+                "file" to targetFile.absolutePath,
+                "token" to "COMPILE_TIMESTAMP = 000L",
+                "value" to "COMPILE_TIMESTAMP = ${compileTs}L"
+            )
         }
 
         println("Injected git.commit.id into ${targetFile.relativeTo(outDir)}: $commitId")
+        println("Injected compile timestamp into ${targetFile.relativeTo(outDir)}: $compileTs")
     }
 }
 
@@ -120,5 +135,5 @@ sourceSets.named("main") {
 }
 
 tasks.compileJava {
-    dependsOn(filterSourcesWithGitCommit)
+    dependsOn(filterSourcesWithBuildInfo)
 }

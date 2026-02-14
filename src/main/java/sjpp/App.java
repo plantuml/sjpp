@@ -3,10 +3,15 @@ package sjpp;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 public class App {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+		if (args.length == 1 && args[0].equals("--version")) {
+			printVersion();
+			return;
+		}
 		if (args.length != 3) {
 			printUsage();
 			return;
@@ -24,9 +29,16 @@ public class App {
 
 	}
 
+    public static void printVersion() {
+        System.err.println("SJPP - Simple Java PreProcessor");
+        System.err.println();
+        System.err.println("Version: " + CompilationInfo.VERSION);
+        System.err.println("Commit:  " + CompilationInfo.COMMIT);
+        System.err.println("Build :  " + new Date(CompilationInfo.COMPILE_TIMESTAMP));
+    }
+
 	private static void printUsage() {
-		System.err.println("SJPP - Simple Java PreProcessor");
-		System.err.println("Version: " + CompilationInfo.COMMIT);
+		printVersion();
 		System.err.println();
 		System.err.println("DESCRIPTION:");
 		System.err.println("  Preprocesses Java source files using conditional compilation directives.");
