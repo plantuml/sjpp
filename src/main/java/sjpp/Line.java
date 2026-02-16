@@ -13,7 +13,7 @@ public class Line {
     private Directive cachedDirective;
     private Boolean cachedDoesApplyOn;
 
-    private Line(String line) {
+    public Line(String line) {
         this.line = line;
     }
 

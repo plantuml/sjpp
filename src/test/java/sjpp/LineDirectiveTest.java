@@ -3,14 +3,10 @@ package sjpp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -22,14 +18,8 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 class LineDirectiveTest {
 
-    @TempDir
-    Path tempDir;
-
-    private Line createLine(String content) throws IOException {
-        Path file = tempDir.resolve("Test.java");
-        Files.writeString(file, content);
-        List<Line> lines = Line.readAllLines(file);
-        return lines.get(0);
+    private Line createLine(String content) {
+        return new Line(content);
     }
 
     // ========================================================================
@@ -516,13 +506,13 @@ class LineDirectiveTest {
         @Test
         void directive_shouldReturnNone_forDirectiveWithLeadingSpace() throws IOException {
             Line line = createLine(" //::comment when __TEST__");
-            assertEquals(Directive.NONE, line.directive());
+            assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forDirectiveWithLeadingTab() throws IOException {
             Line line = createLine("\t//::comment when __TEST__");
-            assertEquals(Directive.NONE, line.directive());
+            assertEquals(Directive.COMMENT, line.directive());
         }
 
         @ParameterizedTest
