@@ -18,10 +18,6 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 class LineDirectiveTest {
 
-    private Line createLine(String content) {
-        return new Line(content);
-    }
-
     // ========================================================================
     // IMPORT directive tests
     // ========================================================================
@@ -32,49 +28,49 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnImport_forSimpleImport() throws IOException {
-            Line line = createLine("import java.util.List;");
+            Line line = new Line("import java.util.List;");
             assertEquals(Directive.IMPORT, line.directive());
         }
 
         @Test
         void directive_shouldReturnImport_forFullyQualifiedImport() throws IOException {
-            Line line = createLine("import com.example.myapp.service.UserService;");
+            Line line = new Line("import com.example.myapp.service.UserService;");
             assertEquals(Directive.IMPORT, line.directive());
         }
 
         @Test
         void directive_shouldReturnImport_forStaticImport() throws IOException {
-            Line line = createLine("import static org.junit.jupiter.api.Assertions.assertEquals;");
+            Line line = new Line("import static org.junit.jupiter.api.Assertions.assertEquals;");
             assertEquals(Directive.IMPORT, line.directive());
         }
 
         @Test
         void directive_shouldReturnImport_forWildcardImport() throws IOException {
-            Line line = createLine("import java.util.*;");
+            Line line = new Line("import java.util.*;");
             assertEquals(Directive.IMPORT, line.directive());
         }
 
         @Test
         void directive_shouldReturnImport_forStaticWildcardImport() throws IOException {
-            Line line = createLine("import static org.junit.jupiter.api.Assertions.*;");
+            Line line = new Line("import static org.junit.jupiter.api.Assertions.*;");
             assertEquals(Directive.IMPORT, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forImportWithLeadingSpace() throws IOException {
-            Line line = createLine("  import java.util.List;");
+            Line line = new Line("  import java.util.List;");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forCommentedImport() throws IOException {
-            Line line = createLine("// import java.util.List;");
+            Line line = new Line("// import java.util.List;");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forImportInString() throws IOException {
-            Line line = createLine("String s = \"import java.util.List;\";");
+            Line line = new Line("String s = \"import java.util.List;\";");
             assertEquals(Directive.NONE, line.directive());
         }
     }
@@ -89,37 +85,37 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnRemoveFile_forBasicSyntax() throws IOException {
-            Line line = createLine("//::remove file when __TEST__");
+            Line line = new Line("//::remove file when __TEST__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFile_withNoSpaces() throws IOException {
-            Line line = createLine("//::removefilewhen__TEST__");
+            Line line = new Line("//::removefilewhen__TEST__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFile_withExtraSpaces() throws IOException {
-            Line line = createLine("//::remove   file   when   __TEST__");
+            Line line = new Line("//::remove   file   when   __TEST__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFile_withTabs() throws IOException {
-            Line line = createLine("//::remove\tfile\twhen\t__TEST__");
+            Line line = new Line("//::remove\tfile\twhen\t__TEST__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFile_withMixedWhitespace() throws IOException {
-            Line line = createLine("//::remove \t file \t when __FLAG__");
+            Line line = new Line("//::remove \t file \t when __FLAG__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFile_withMultipleFlags() throws IOException {
-            Line line = createLine("//::remove file when __TEST__ __OTHER__");
+            Line line = new Line("//::remove file when __TEST__ __OTHER__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
@@ -132,7 +128,7 @@ class LineDirectiveTest {
             "//::remove file when flag123"
         })
         void directive_shouldReturnRemoveFile_withVariousFlags(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
     }
@@ -147,25 +143,25 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnRemoveCurrentFolder_forBasicSyntax() throws IOException {
-            Line line = createLine("//::remove current folder when __TEST__");
+            Line line = new Line("//::remove current folder when __TEST__");
             assertEquals(Directive.REMOVE_CURRENT_FOLDER, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveCurrentFolder_withNoSpaces() throws IOException {
-            Line line = createLine("//::removecurrentfolderwhen__TEST__");
+            Line line = new Line("//::removecurrentfolderwhen__TEST__");
             assertEquals(Directive.REMOVE_CURRENT_FOLDER, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveCurrentFolder_withExtraSpaces() throws IOException {
-            Line line = createLine("//::remove   current   folder   when   __TEST__");
+            Line line = new Line("//::remove   current   folder   when   __TEST__");
             assertEquals(Directive.REMOVE_CURRENT_FOLDER, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveCurrentFolder_withTabs() throws IOException {
-            Line line = createLine("//::remove\tcurrent\tfolder\twhen\t__FLAG__");
+            Line line = new Line("//::remove\tcurrent\tfolder\twhen\t__FLAG__");
             assertEquals(Directive.REMOVE_CURRENT_FOLDER, line.directive());
         }
 
@@ -176,7 +172,7 @@ class LineDirectiveTest {
             "//::removecurrentfolderwhen__X__"
         })
         void directive_shouldReturnRemoveCurrentFolder_withVariousFormats(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.REMOVE_CURRENT_FOLDER, line.directive());
         }
     }
@@ -191,25 +187,25 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnRemoveFolderAndSubfolders_forBasicSyntax() throws IOException {
-            Line line = createLine("//::remove folder when __TEST__");
+            Line line = new Line("//::remove folder when __TEST__");
             assertEquals(Directive.REMOVE_FOLDER_AND_SUBFOLDERS, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFolderAndSubfolders_withNoSpaces() throws IOException {
-            Line line = createLine("//::removefolderwhen__TEST__");
+            Line line = new Line("//::removefolderwhen__TEST__");
             assertEquals(Directive.REMOVE_FOLDER_AND_SUBFOLDERS, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFolderAndSubfolders_withExtraSpaces() throws IOException {
-            Line line = createLine("//::remove   folder   when   __TEST__");
+            Line line = new Line("//::remove   folder   when   __TEST__");
             assertEquals(Directive.REMOVE_FOLDER_AND_SUBFOLDERS, line.directive());
         }
 
         @Test
         void directive_shouldReturnRemoveFolderAndSubfolders_withTabs() throws IOException {
-            Line line = createLine("//::remove\tfolder\twhen\t__FLAG__");
+            Line line = new Line("//::remove\tfolder\twhen\t__FLAG__");
             assertEquals(Directive.REMOVE_FOLDER_AND_SUBFOLDERS, line.directive());
         }
 
@@ -220,7 +216,7 @@ class LineDirectiveTest {
             "//::removefolderwhen__X__"
         })
         void directive_shouldReturnRemoveFolderAndSubfolders_withVariousFormats(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.REMOVE_FOLDER_AND_SUBFOLDERS, line.directive());
         }
     }
@@ -235,31 +231,31 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnComment_forBasicSyntax() throws IOException {
-            Line line = createLine("//::comment when __TEST__");
+            Line line = new Line("//::comment when __TEST__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnComment_withNoSpaces() throws IOException {
-            Line line = createLine("//::commentwhen__TEST__");
+            Line line = new Line("//::commentwhen__TEST__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnComment_withExtraSpaces() throws IOException {
-            Line line = createLine("//::comment   when   __TEST__");
+            Line line = new Line("//::comment   when   __TEST__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnComment_withTabs() throws IOException {
-            Line line = createLine("//::comment\twhen\t__FLAG__");
+            Line line = new Line("//::comment\twhen\t__FLAG__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnComment_withMixedWhitespace() throws IOException {
-            Line line = createLine("//::comment \t when \t __FLAG__");
+            Line line = new Line("//::comment \t when \t __FLAG__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
@@ -272,7 +268,7 @@ class LineDirectiveTest {
             "//::comment when FLAG1 FLAG2 FLAG3"
         })
         void directive_shouldReturnComment_withVariousFormats(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.COMMENT, line.directive());
         }
     }
@@ -287,25 +283,25 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnUncomment_forBasicSyntax() throws IOException {
-            Line line = createLine("//::uncomment when __TEST__");
+            Line line = new Line("//::uncomment when __TEST__");
             assertEquals(Directive.UNCOMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnUncomment_withNoSpaces() throws IOException {
-            Line line = createLine("//::uncommentwhen__TEST__");
+            Line line = new Line("//::uncommentwhen__TEST__");
             assertEquals(Directive.UNCOMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnUncomment_withExtraSpaces() throws IOException {
-            Line line = createLine("//::uncomment   when   __TEST__");
+            Line line = new Line("//::uncomment   when   __TEST__");
             assertEquals(Directive.UNCOMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnUncomment_withTabs() throws IOException {
-            Line line = createLine("//::uncomment\twhen\t__FLAG__");
+            Line line = new Line("//::uncomment\twhen\t__FLAG__");
             assertEquals(Directive.UNCOMMENT, line.directive());
         }
 
@@ -316,7 +312,7 @@ class LineDirectiveTest {
             "//::uncommentwhen__X__"
         })
         void directive_shouldReturnUncomment_withVariousFormats(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.UNCOMMENT, line.directive());
         }
     }
@@ -331,25 +327,25 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnRevert_forBasicSyntax() throws IOException {
-            Line line = createLine("//::revert when __TEST__");
+            Line line = new Line("//::revert when __TEST__");
             assertEquals(Directive.REVERT, line.directive());
         }
 
         @Test
         void directive_shouldReturnRevert_withNoSpaces() throws IOException {
-            Line line = createLine("//::revertwhen__TEST__");
+            Line line = new Line("//::revertwhen__TEST__");
             assertEquals(Directive.REVERT, line.directive());
         }
 
         @Test
         void directive_shouldReturnRevert_withExtraSpaces() throws IOException {
-            Line line = createLine("//::revert   when   __TEST__");
+            Line line = new Line("//::revert   when   __TEST__");
             assertEquals(Directive.REVERT, line.directive());
         }
 
         @Test
         void directive_shouldReturnRevert_withTabs() throws IOException {
-            Line line = createLine("//::revert\twhen\t__FLAG__");
+            Line line = new Line("//::revert\twhen\t__FLAG__");
             assertEquals(Directive.REVERT, line.directive());
         }
 
@@ -360,7 +356,7 @@ class LineDirectiveTest {
             "//::revertwhen__X__"
         })
         void directive_shouldReturnRevert_withVariousFormats(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.REVERT, line.directive());
         }
     }
@@ -375,25 +371,25 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnDone_forBasicSyntax() throws IOException {
-            Line line = createLine("//::done");
+            Line line = new Line("//::done");
             assertEquals(Directive.DONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnDone_withTrailingSpaces() throws IOException {
-            Line line = createLine("//::done   ");
+            Line line = new Line("//::done   ");
             assertEquals(Directive.DONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnDone_withTrailingComment() throws IOException {
-            Line line = createLine("//::done // end of block");
+            Line line = new Line("//::done // end of block");
             assertEquals(Directive.DONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnDone_withTrailingText() throws IOException {
-            Line line = createLine("//::done anything here");
+            Line line = new Line("//::done anything here");
             assertEquals(Directive.DONE, line.directive());
         }
 
@@ -406,7 +402,7 @@ class LineDirectiveTest {
             "//::donealiases"
         })
         void directive_shouldReturnDone_withVariousFormats(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.DONE, line.directive());
         }
     }
@@ -421,97 +417,97 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnNone_forEmptyLine() throws IOException {
-            Line line = createLine("");
+            Line line = new Line("");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forWhitespaceLine() throws IOException {
-            Line line = createLine("    ");
+            Line line = new Line("    ");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forRegularCode() throws IOException {
-            Line line = createLine("System.out.println(\"Hello\");");
+            Line line = new Line("System.out.println(\"Hello\");");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forRegularComment() throws IOException {
-            Line line = createLine("// This is a regular comment");
+            Line line = new Line("// This is a regular comment");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forJavadocComment() throws IOException {
-            Line line = createLine("/** Javadoc comment */");
+            Line line = new Line("/** Javadoc comment */");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forBlockComment() throws IOException {
-            Line line = createLine("/* block comment */");
+            Line line = new Line("/* block comment */");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forPackageStatement() throws IOException {
-            Line line = createLine("package com.example;");
+            Line line = new Line("package com.example;");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forClassDeclaration() throws IOException {
-            Line line = createLine("public class MyClass {");
+            Line line = new Line("public class MyClass {");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forMethodDeclaration() throws IOException {
-            Line line = createLine("public void doSomething() {");
+            Line line = new Line("public void doSomething() {");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forAnnotation() throws IOException {
-            Line line = createLine("@Override");
+            Line line = new Line("@Override");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forSingleColon() throws IOException {
-            Line line = createLine("//:something");
+            Line line = new Line("//:something");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forTripleColon() throws IOException {
-            Line line = createLine("//:::something");
+            Line line = new Line("//:::something");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forUnknownDirective() throws IOException {
-            Line line = createLine("//::unknown when __TEST__");
+            Line line = new Line("//::unknown when __TEST__");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forMisspelledDirective() throws IOException {
-            Line line = createLine("//::coment when __TEST__");
+            Line line = new Line("//::coment when __TEST__");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forDirectiveWithLeadingSpace() throws IOException {
-            Line line = createLine(" //::comment when __TEST__");
+            Line line = new Line(" //::comment when __TEST__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forDirectiveWithLeadingTab() throws IOException {
-            Line line = createLine("\t//::comment when __TEST__");
+            Line line = new Line("\t//::comment when __TEST__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
@@ -534,7 +530,7 @@ class LineDirectiveTest {
             "// NOTE: important"
         })
         void directive_shouldReturnNone_forVariousCodeLines(String input) throws IOException {
-            Line line = createLine(input);
+            Line line = new Line(input);
             assertEquals(Directive.NONE, line.directive());
         }
     }
@@ -549,7 +545,7 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnSameInstance_whenCalledMultipleTimes() throws IOException {
-            Line line = createLine("//::comment when __TEST__");
+            Line line = new Line("//::comment when __TEST__");
             
             Directive first = line.directive();
             Directive second = line.directive();
@@ -562,7 +558,7 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldBeCached_forImport() throws IOException {
-            Line line = createLine("import java.util.List;");
+            Line line = new Line("import java.util.List;");
             
             Directive first = line.directive();
             Directive second = line.directive();
@@ -573,7 +569,7 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldBeCached_forNone() throws IOException {
-            Line line = createLine("int x = 5;");
+            Line line = new Line("int x = 5;");
             
             Directive first = line.directive();
             Directive second = line.directive();
@@ -593,26 +589,26 @@ class LineDirectiveTest {
 
         @Test
         void directive_shouldReturnNone_forDirectiveLikeStringContent() throws IOException {
-            Line line = createLine("String s = \"//::comment when __TEST__\";");
+            Line line = new Line("String s = \"//::comment when __TEST__\";");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forDirectiveInBlockComment() throws IOException {
-            Line line = createLine("/* //::comment when __TEST__ */");
+            Line line = new Line("/* //::comment when __TEST__ */");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldHandleVeryLongLine() throws IOException {
             String longFlag = "__" + "A".repeat(1000) + "__";
-            Line line = createLine("//::comment when " + longFlag);
+            Line line = new Line("//::comment when " + longFlag);
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldHandleSpecialCharactersInFlag() throws IOException {
-            Line line = createLine("//::comment when __TEST_123__");
+            Line line = new Line("//::comment when __TEST_123__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
@@ -620,31 +616,31 @@ class LineDirectiveTest {
         void directive_shouldReturnComment_withUnicodeWhitespace() throws IOException {
             // Using regular spaces and tabs, not unicode whitespace
             // as unicode whitespace behavior may vary
-            Line line = createLine("//::comment when __TEST__");
+            Line line = new Line("//::comment when __TEST__");
             assertEquals(Directive.COMMENT, line.directive());
         }
 
         @Test
         void directive_shouldHandleMinimalDirective() throws IOException {
-            Line line = createLine("//::done");
+            Line line = new Line("//::done");
             assertEquals(Directive.DONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forJustDoubleSlashColon() throws IOException {
-            Line line = createLine("//:");
+            Line line = new Line("//:");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnNone_forJustDoubleSlashDoubleColon() throws IOException {
-            Line line = createLine("//::");
+            Line line = new Line("//::");
             assertEquals(Directive.NONE, line.directive());
         }
 
         @Test
         void directive_shouldReturnImport_forImportWithTrailingComment() throws IOException {
-            Line line = createLine("import java.util.List; // used for collections");
+            Line line = new Line("import java.util.List; // used for collections");
             // Note: this depends on implementation - getImportName() looks for first ';'
             assertEquals(Directive.IMPORT, line.directive());
         }
@@ -661,20 +657,20 @@ class LineDirectiveTest {
         @Test
         void directive_shouldDetectRemoveFile_beforeRemoveFolder() throws IOException {
             // "remove file" should be detected even though "remove folder" is a substring match
-            Line line = createLine("//::remove file when __TEST__");
+            Line line = new Line("//::remove file when __TEST__");
             assertEquals(Directive.REMOVE_FILE, line.directive());
         }
 
         @Test
         void directive_shouldDetectRemoveCurrentFolder_beforeRemoveFolder() throws IOException {
             // "remove current folder" should be detected correctly
-            Line line = createLine("//::remove current folder when __TEST__");
+            Line line = new Line("//::remove current folder when __TEST__");
             assertEquals(Directive.REMOVE_CURRENT_FOLDER, line.directive());
         }
 
         @Test
         void directive_shouldDetectRemoveFolder_correctly() throws IOException {
-            Line line = createLine("//::remove folder when __TEST__");
+            Line line = new Line("//::remove folder when __TEST__");
             assertEquals(Directive.REMOVE_FOLDER_AND_SUBFOLDERS, line.directive());
         }
     }
