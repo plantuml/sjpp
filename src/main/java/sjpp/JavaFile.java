@@ -19,7 +19,19 @@ public class JavaFile {
     private final String signature;
 
     public boolean isItMe(String name) {
-        return signature.endsWith(name);
+        String normalizedName = name;
+        
+        // Handle static imports: "static com.example.Class.member" -> "com.example.Class"
+        if (name.startsWith("static ")) {
+            normalizedName = name.substring("static ".length());
+            // Remove the member part (last segment after the last dot)
+            final int lastDot = normalizedName.lastIndexOf('.');
+            if (lastDot != -1) {
+                normalizedName = normalizedName.substring(0, lastDot);
+            }
+        }
+        
+        return signature.endsWith(normalizedName);
     }
 
     public JavaFile(Context context, Path path) throws IOException {
