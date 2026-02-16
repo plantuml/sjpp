@@ -18,19 +18,20 @@ public class JavaFile {
     private String packageName;
     private final String signature;
 
-    public boolean isItMe(String name) {
-        String normalizedName = name;
-        
-        // Handle static imports: "static com.example.Class.member" -> "com.example.Class"
-        if (name.startsWith("static ")) {
-            normalizedName = name.substring("static ".length());
+    public boolean matchesImportStatement(String importName) {
+        String normalizedName = importName;
+
+        // Handle static imports: "static com.example.Class.member" ->
+        // "com.example.Class"
+        if (importName.startsWith("static ")) {
+            normalizedName = importName.substring("static ".length());
             // Remove the member part (last segment after the last dot)
             final int lastDot = normalizedName.lastIndexOf('.');
             if (lastDot != -1) {
                 normalizedName = normalizedName.substring(0, lastDot);
             }
         }
-        
+
         return signature.endsWith(normalizedName);
     }
 
@@ -72,6 +73,10 @@ public class JavaFile {
     @Override
     public String toString() {
         return path.toString();
+    }
+
+    public String getSignature() {
+        return signature;
     }
 
     public void process() {

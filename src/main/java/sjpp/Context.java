@@ -136,7 +136,7 @@ public class Context {
 
     public boolean removeImportLine(String importName) {
         for (JavaFile file : removedFiles)
-            if (file.isItMe(importName))
+            if (file.matchesImportStatement(importName))
                 return true;
 
         return false;
