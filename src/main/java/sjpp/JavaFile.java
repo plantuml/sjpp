@@ -93,10 +93,13 @@ public class JavaFile {
             final Directive dir = in.directive();
             String line = in.getLine();
             if (dir == Directive.IMPORT) {
-                final String importName = in.getImportName();
-                if (context.removeImportLine(importName))
+                if (mode == ProcessMode.COMMENT)
                     line = commentThisLine(line);
-
+                else {
+                    final String importName = in.getImportName();
+                    if (context.removeImportLine(importName))
+                        line = commentThisLine(line);
+                }
             } else if (dir == Directive.UNCOMMENT && in.doesApplyOn(define)) {
                 mode = ProcessMode.UNCOMMENT;
                 line = removeLine(line);
